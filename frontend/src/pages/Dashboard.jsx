@@ -128,7 +128,7 @@ export default function Dashboard() {
             <Kpi icon={TrendingUp} label="Avg. order" value={money(data.kpis.avg_order.value)} change={data.kpis.avg_order.change} />
             <Kpi icon={Coffee} label="Items sold" value={data.kpis.items_sold.value} change={data.kpis.items_sold.change} />
           </div>
-
+          {/* Analytics Revenue */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="card p-5 lg:col-span-2">
               <h3 className="text-base font-bold text-stone-900">Revenue</h3>
@@ -158,7 +158,7 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </div>
             </div>
-
+            {/* best sellers */}
             <div className="card p-5">
               <h3 className="text-base font-bold text-stone-900">Best sellers</h3>
               <p className="mb-4 text-sm text-stone-500">By revenue</p>
@@ -185,7 +185,7 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-
+          {/* Payment methods */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="card p-5">
               <h3 className="text-base font-bold text-stone-900">Payment methods</h3>
@@ -229,7 +229,7 @@ export default function Dashboard() {
                 </ul>
               )}
             </div>
-
+            {/* Recent orders table */}
             <div className="card overflow-hidden lg:col-span-2">
               <div className="flex items-center justify-between p-5 pb-3">
                 <div>

@@ -38,7 +38,7 @@ export default function ProductArt({ product, className = "", iconClass = "size-
   const Icon = iconFor(product.category);
   const tint = TINTS[(product.category_id || 0) % TINTS.length];
   return (
-    <div className={`flex items-center justify-center bg-gradient-to-br ${tint} ${className}`}>
+    <div className={`flex items-center justify-center bg-linear-to-br ${tint} ${className}`}>
       <Icon className={`${iconClass} opacity-80`} strokeWidth={1.6} />
     </div>
   );

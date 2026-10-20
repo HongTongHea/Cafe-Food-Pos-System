@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Coffee, LayoutDashboard, LogOut, Menu, Package, ReceiptText, ShoppingBag, Users, X } from "lucide-react";
+import { Settings, Coffee, LayoutDashboard, LogOut, Menu, Package, ReceiptText, ShoppingBag, Users, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 import { initials } from "../utils/format";
@@ -12,6 +12,7 @@ const NAV = [
   { to: "/orders", label: "Orders", icon: ReceiptText },
   { to: "/products", label: "Products", icon: Package, admin: true },
   { to: "/users", label: "Staff", icon: Users, admin: true },
+  { to: "/settings", label: "Settings", icon: Settings, admin: true },
 ];
 
 function Brand({ name }) {

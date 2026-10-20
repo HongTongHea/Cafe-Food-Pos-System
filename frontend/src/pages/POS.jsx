@@ -74,7 +74,7 @@ export default function POS() {
 
   const load = useCallback(async () => {
     try {
-      const [p, c] = await Promise.all([api.get("/products"), api.get("/categories")]);
+      const [p, c] = await Promise.all([api.get("/products?active=1"), api.get("/categories")]);
       setProducts(p.data);
       setCategories(c.data);
       setError("");

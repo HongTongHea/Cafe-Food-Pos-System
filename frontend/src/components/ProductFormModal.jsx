@@ -129,8 +129,6 @@ export default function ProductFormModal({ open, product, categories, onClose, o
           <input id="pf-name" className="input" value={form.product_name} onChange={set("product_name")} maxLength={150} autoFocus />
         </div>
 
-
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="label" htmlFor="pf-cat">Category</label>

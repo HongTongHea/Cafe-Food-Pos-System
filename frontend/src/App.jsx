@@ -9,6 +9,7 @@ import POS from "./pages/POS";
 import Orders from "./pages/Orders";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
+import Settings from "./pages/Settings";
 
 // The dashboard pulls in the chart library, so it loads only when an admin opens it.
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -41,6 +42,7 @@ export default function App() {
             />
             <Route path="/products" element={<Products />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
       </Route>
