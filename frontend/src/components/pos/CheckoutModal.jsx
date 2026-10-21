@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { Banknote, CreditCard, Loader2, QrCode } from "lucide-react";
 import Modal from "../ui/Modal";
 import { quickCashAmounts } from "../../utils/totals";
+import { useLanguage } from "../../context/LanguageContext";
 
-const METHODS = [
-  { key: "cash", label: "Cash", icon: Banknote },
-  { key: "card", label: "Card", icon: CreditCard },
-  { key: "qr", label: "QR pay", icon: QrCode },
-];
+
 
 export default function CheckoutModal({ open, total, money, onClose, onConfirm }) {
+  const { t } = useLanguage();
+  const METHODS = [
+    { key: "cash", label: t("cash"), icon: Banknote },
+    // { key: "card", label: t("card"), icon: CreditCard },
+    { key: "qr", label: t("qr"), icon: QrCode },
+  ];
   const [method, setMethod] = useState("cash");
   const [received, setReceived] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -41,16 +44,16 @@ export default function CheckoutModal({ open, total, money, onClose, onConfirm }
     <Modal
       open={open}
       onClose={submitting ? undefined : onClose}
-      title="Take payment"
+      title={t("takepayment")}
       size="sm"
       footer={
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>
-            Back
+            {t("back")}
           </button>
           <button type="button" className="btn btn-primary min-w-40" onClick={submit} disabled={!enough || submitting}>
             {submitting && <Loader2 className="size-4 animate-spin" />}
-            Complete payment
+            {t("complatepayment")}
           </button>
         </>
       }
@@ -60,17 +63,16 @@ export default function CheckoutModal({ open, total, money, onClose, onConfirm }
         <div className="mt-1 font-display text-4xl font-extrabold tabular-nums">{money(total)}</div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {METHODS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             type="button"
             onClick={() => setMethod(key)}
-            className={`flex flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-3 text-sm font-semibold transition ${
-              method === key
-                ? "border-brand-600 bg-brand-50 text-brand-800"
-                : "border-stone-200 text-stone-600 hover:border-stone-300"
-            }`}
+            className={`flex flex-col items-center gap-1.5 rounded-xl border-2 px-3 py-3 text-sm font-semibold transition ${method === key
+              ? "border-brand-600 bg-brand-50 text-brand-800"
+              : "border-stone-200 text-stone-600 hover:border-stone-300"
+              }`}
           >
             <Icon className="size-5" />
             {label}
@@ -82,7 +84,7 @@ export default function CheckoutModal({ open, total, money, onClose, onConfirm }
         <div className="mt-5 space-y-3">
           <div>
             <label className="label" htmlFor="cash-received">
-              Cash received
+              {t("cashReceived")}
             </label>
             <input
               id="cash-received"
@@ -113,11 +115,10 @@ export default function CheckoutModal({ open, total, money, onClose, onConfirm }
           </div>
 
           <div
-            className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold ${
-              enough && received ? "bg-emerald-50 text-emerald-800" : "bg-stone-100 text-stone-500"
-            }`}
+            className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold ${enough && received ? "bg-emerald-50 text-emerald-800" : "bg-stone-100 text-stone-500"
+              }`}
           >
-            <span>Change to give</span>
+            <span>{t("change")}</span>
             <span className="text-lg font-extrabold tabular-nums">{money(change)}</span>
           </div>
         </div>
@@ -125,7 +126,7 @@ export default function CheckoutModal({ open, total, money, onClose, onConfirm }
         <p className="mt-5 rounded-xl bg-stone-100 p-4 text-center text-sm text-stone-600">
           {method === "card"
             ? "Process the card on your terminal, then tap Complete payment."
-            : "Let the customer scan your QR code, confirm it arrived, then tap Complete payment."}
+            : t("paymentnote")}
         </p>
       )}
     </Modal>

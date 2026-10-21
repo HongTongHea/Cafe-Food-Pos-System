@@ -10,6 +10,7 @@ import ProductArt from "../components/ui/ProductArt";
 import Cart from "../components/pos/Cart";
 import CheckoutModal from "../components/pos/CheckoutModal";
 import ReceiptModal from "../components/pos/Receipt";
+import { useLanguage } from "../context/LanguageContext";
 
 const MAX_PER_LINE = 99;
 
@@ -51,6 +52,7 @@ function ProductCard({ product, qtyInCart, onAdd, money }) {
 }
 
 export default function POS() {
+  const { t } = useLanguage();
   const { money, taxRate } = useSettings();
   const toast = useToast();
 
@@ -190,17 +192,17 @@ export default function POS() {
     <div className="flex h-full">
       {/* ---------------- menu ---------------- */}
       <section className="flex min-w-0 flex-1 flex-col">
-        <div className="space-y-4 px-4 pt-4 sm:px-6 sm:pt-6">
+        <div className="space-y-4 px-6 pt-6 sm:px-6 sm:pt-6 lg:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-stone-900">New order</h1>
-              <p className="text-sm text-stone-500">Tap items to add them to the order</p>
+              <h1 className="text-2xl font-extrabold tracking-tight text-stone-900">{t("pos")}</h1>
+              <p className="text-sm text-stone-500"> {t("tapItemsToAddToOrder")}</p>
             </div>
             <div className="relative w-full sm:w-72">
               <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400" />
               <input
                 className="input pl-10"
-                placeholder="Search menu…"
+                placeholder={t("searchMenu")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />

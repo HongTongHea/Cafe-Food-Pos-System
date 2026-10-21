@@ -12,8 +12,10 @@ import ProductArt from "../components/ui/ProductArt";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import ProductFormModal from "../components/ProductFormModal";
 import CategoriesModal from "../components/CategoriesModal";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Products() {
+  const { t } = useLanguage();
   const { money } = useSettings();
   const toast = useToast();
 
@@ -99,15 +101,15 @@ export default function Products() {
   return (
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Products"
-        subtitle={`${products.length} items on the menu`}
+        title={t("products")}
+        subtitle={`${products.length} ${t("itemsOnMenu")}`}
         actions={
           <>
             <button className="btn btn-secondary" onClick={() => setCatsOpen(true)}>
-              <Tags className="size-4" /> Categories
+              <Tags className="size-4" /> {t("categories")}
             </button>
             <button className="btn btn-primary" onClick={() => { setEditing(null); setFormOpen(true); }}>
-              <Plus className="size-4" /> Add product
+              <Plus className="size-4" /> {t("addProduct")}
             </button>
           </>
         }
@@ -117,18 +119,18 @@ export default function Products() {
         <div className="flex flex-wrap items-center gap-3 border-b border-stone-100 p-4">
           <div className="relative w-full sm:w-64">
             <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400" />
-            <input className="input py-2 pl-10" placeholder="Search products…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input className="input py-2 pl-10" placeholder={t("search")} value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
           <select className="input w-auto py-2" value={catFilter} onChange={(e) => setCatFilter(e.target.value)} aria-label="Category">
-            <option value="">All categories</option>
+            <option value=""> {t("allCategories")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
           <select className="input w-auto py-2" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status">
-            <option value="">All statuses</option>
-            <option value="active">Available</option>
-            <option value="inactive">Hidden</option>
+            <option value="">{t("allStatuses")}</option>
+            <option value="active">{t("available")}</option>
+            <option value="inactive">{t("hidden")}</option>
           </select>
         </div>
 
@@ -149,11 +151,11 @@ export default function Products() {
               <table className="table-base min-w-190">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th className="text-right">Price</th>
-                    <th>Stock</th>
-                    <th>Available</th>
+                    <th>{t("products")}</th>
+                    <th>{t("categories")}</th>
+                    <th>{t("price")}</th>
+                    <th>{t("stock")}</th>
+                    <th>{t("available")}</th>
                     <th className="w-24" />
                   </tr>
                 </thead>
@@ -170,7 +172,7 @@ export default function Products() {
                         </div>
                       </td>
                       <td>{p.category || <span className="text-stone-400">—</span>}</td>
-                      <td className="text-right font-bold tabular-nums">{money(p.price)}</td>
+                      <td className="font-bold tabular-nums">{money(p.price)}</td>
                       <td>
                         {p.track_stock ? (
                           <Badge tone={p.stock_quantity === 0 ? "red" : p.stock_quantity <= 5 ? "amber" : "green"}>
@@ -216,9 +218,10 @@ export default function Products() {
       <CategoriesModal open={catsOpen} categories={categories} onClose={() => setCatsOpen(false)} onChanged={load} />
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete product?"
-        message={`"${deleting?.product_name}" will be removed from the menu. Past orders keep their history. To just hide it, switch off "Available" instead.`}
-        confirmText="Delete"
+        title={t("deleteProduct")}
+        message={`"${deleting?.product_name}" ${t("notedeleteProduct")}`}
+        confirmText={t("delete")}
+        cancelText={t("cancel")}
         danger
         loading={deleteBusy}
         onConfirm={confirmDelete}

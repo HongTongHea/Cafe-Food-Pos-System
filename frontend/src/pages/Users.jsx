@@ -10,8 +10,11 @@ import EmptyState from "../components/ui/EmptyState";
 import Badge from "../components/ui/Badge";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import UserFormModal from "../components/UserFormModal";
+import { useLanguage } from "../context/LanguageContext";
+
 
 export default function Users() {
+  const { t } = useLanguage();
   const { user: me } = useAuth();
   const toast = useToast();
 
@@ -71,11 +74,11 @@ export default function Users() {
   return (
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Staff"
-        subtitle="Who can sign in to the POS"
+        title={t("staff")}
+        subtitle={t("whoCanSignInToThePOS")}
         actions={
           <button className="btn btn-primary" onClick={() => { setEditing(null); setFormOpen(true); }}>
-            <Plus className="size-4" /> Add staff
+            <Plus className="size-4" /> {t("addStaff")}
           </button>
         }
       />
@@ -90,10 +93,10 @@ export default function Users() {
             <table className="table-base min-w-155">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Added</th>
+                  <th>{t("name")}</th>
+                  <th>{t("role")}</th>
+                  <th>{t("status")}</th>
+                  <th>{t("date")}</th>
                   <th className="w-24" />
                 </tr>
               </thead>
@@ -147,9 +150,10 @@ export default function Users() {
       <UserFormModal open={formOpen} user={editing} onClose={() => setFormOpen(false)} onSave={save} />
       <ConfirmDialog
         open={Boolean(deleting)}
-        title="Delete staff member?"
-        message={`${deleting?.name} will no longer be able to sign in. Their past orders stay in the history. To keep the account but block access, set it to Disabled instead.`}
-        confirmText="Delete"
+        title={t("deleteStaff")}
+        message={`${deleting?.name} ${t("notedeleteStaff")}`}
+        confirmText={t("delete")}
+        cancelText={t("cancel")}
         danger
         loading={deleteBusy}
         onConfirm={confirmDelete}

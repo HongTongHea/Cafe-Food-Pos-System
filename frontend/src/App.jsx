@@ -30,7 +30,6 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/pos" element={<POS />} />
           <Route path="/orders" element={<Orders />} />
-
           <Route element={<ProtectedRoute adminOnly />}>
             <Route
               path="/dashboard"
@@ -42,8 +41,8 @@ export default function App() {
             />
             <Route path="/products" element={<Products />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/settings" element={<Settings />} />
           </Route>
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>
 

@@ -2,6 +2,7 @@ import { Printer } from "lucide-react";
 import Modal from "../ui/Modal";
 import { useSettings } from "../../context/SettingsContext";
 import { fmtDateTime, ORDER_TYPE_LABEL, PAYMENT_LABEL } from "../../utils/format";
+import { useLanguage } from "../../context/LanguageContext";
 
 function Row({ label, value, bold = false, className = "" }) {
   return (
@@ -91,11 +92,12 @@ export function ReceiptBody({ order }) {
 
 // extraActions: extra buttons rendered in the footer (e.g. "Void order")
 export default function ReceiptModal({ order, onClose, extraActions, closeLabel = "Close" }) {
+  const { t } = useLanguage();
   return (
     <Modal
       open={Boolean(order)}
       onClose={onClose}
-      title={order ? `Receipt ${order.order_no}` : "Receipt"}
+      title={order ? `${t("receipt")} ${order.order_no}` : t("receipt")}
       size="sm"
       footer={
         <>

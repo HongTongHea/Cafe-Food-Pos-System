@@ -3,8 +3,10 @@ import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import api, { errorMessage } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import Modal from "./ui/Modal";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function CategoriesModal({ open, categories, onClose, onChanged }) {
+  const { t } = useLanguage();
   const toast = useToast();
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -45,16 +47,16 @@ export default function CategoriesModal({ open, categories, onClose, onChanged }
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Categories" footer={<button className="btn btn-primary" onClick={onClose}>Done</button>}>
+    <Modal open={open} onClose={onClose} title={t("categories")} footer={<button className="btn btn-primary" onClick={onClose}> {t("done")}</button>}>
       <form onSubmit={add} className="mb-4 flex gap-2">
-        <input className="input" placeholder="New category name" value={name} maxLength={80} onChange={(e) => setName(e.target.value)} />
+        <input className="input" placeholder={t("new_category_name")} value={name} maxLength={80} onChange={(e) => setName(e.target.value)} />
         <button className="btn btn-primary" disabled={busy || !name.trim()}>
-          <Plus className="size-4" /> Add
+          <Plus className="size-4" /> {t("add")}
         </button>
       </form>
 
       {categories.length === 0 ? (
-        <p className="py-6 text-center text-sm text-stone-400">No categories yet</p>
+        <p className="py-6 text-center text-sm text-stone-400">{t("no_categories_yet")}</p>
       ) : (
         <ul className="divide-y divide-stone-100 rounded-xl border border-stone-200">
           {categories.map((c) => (
@@ -71,17 +73,17 @@ export default function CategoriesModal({ open, categories, onClose, onChanged }
                       if (e.key === "Escape") setEditingId(null);
                     }}
                   />
-                  <button className="btn-icon" onClick={saveEdit} disabled={busy} aria-label="Save"><Check className="size-4 text-emerald-600" /></button>
-                  <button className="btn-icon" onClick={() => setEditingId(null)} aria-label="Cancel"><X className="size-4" /></button>
+                  <button className="btn-icon" onClick={saveEdit} disabled={busy} aria-label={t("save")}><Check className="size-4 text-emerald-600" /></button>
+                  <button className="btn-icon" onClick={() => setEditingId(null)} aria-label={t("cancel")}><X className="size-4" /></button>
                 </>
               ) : (
                 <>
                   <span className="flex-1 font-medium">{c.name}</span>
                   <span className="text-xs text-stone-400">{c.product_count} items</span>
-                  <button className="btn-icon" onClick={() => { setEditingId(c.id); setEditName(c.name); }} aria-label={`Rename ${c.name}`}>
+                  <button className="btn-icon" onClick={() => { setEditingId(c.id); setEditName(c.name); }} aria-label={t("rename")}>
                     <Pencil className="size-4" />
                   </button>
-                  <button className="btn-icon hover:text-red-600" onClick={() => remove(c)} disabled={busy} aria-label={`Delete ${c.name}`}>
+                  <button className="btn-icon hover:text-red-600" onClick={() => remove(c)} disabled={busy} aria-label={t("delete")}>
                     <Trash2 className="size-4" />
                   </button>
                 </>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import Modal from "./ui/Modal";
 import ProductArt from "./ui/ProductArt";
+import { useLanguage } from "../context/LanguageContext";
 
 const EMPTY = {
   product_name: "",
@@ -40,6 +41,7 @@ function compressImage(file, maxSize = 480, quality = 0.82) {
 }
 
 export default function ProductFormModal({ open, product, categories, onClose, onSave }) {
+  const { t } = useLanguage();
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -108,15 +110,15 @@ export default function ProductFormModal({ open, product, categories, onClose, o
     <Modal
       open={open}
       onClose={saving ? undefined : onClose}
-      title={editing ? "Edit product" : "New product"}
+      title={editing ? t("editProduct") : t("newProduct")}
       footer={
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={saving}>
-            Cancel
+            {t("cancel")}
           </button>
           <button type="submit" form="product-form" className="btn btn-primary" disabled={saving}>
             {saving && <Loader2 className="size-4 animate-spin" />}
-            {editing ? "Save changes" : "Add product"}
+            {editing ? t("saveChanges") : t("addProduct")}
           </button>
         </>
       }
@@ -125,13 +127,13 @@ export default function ProductFormModal({ open, product, categories, onClose, o
         {error && <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-200">{error}</div>}
 
         <div>
-          <label className="label" htmlFor="pf-name">Name</label>
-          <input id="pf-name" className="input" value={form.product_name} onChange={set("product_name")} maxLength={150} autoFocus />
+          <label className="label" htmlFor="pf-name"> {t("name")}</label>
+          <input id="pf-name" className="input" placeholder={t("newProductName")} value={form.product_name} onChange={set("product_name")} maxLength={150} autoFocus />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label" htmlFor="pf-cat">Category</label>
+            <label className="label" htmlFor="pf-cat"> {t("categories")}</label>
             <select id="pf-cat" className="input" value={form.category_id} onChange={set("category_id")}>
               <option value="">Uncategorised</option>
               {categories.map((c) => (
@@ -140,18 +142,18 @@ export default function ProductFormModal({ open, product, categories, onClose, o
             </select>
           </div>
           <div>
-            <label className="label" htmlFor="pf-price">Price</label>
-            <input id="pf-price" className="input" type="number" min="0" step="0.01" inputMode="decimal" value={form.price} onChange={set("price")} />
+            <label className="label" htmlFor="pf-price"> {t("price")}</label>
+            <input id="pf-price" className="input" type="number" min="0" step="0.01" placeholder={t("enterPrice")} inputMode="decimal" value={form.price} onChange={set("price")} />
           </div>
         </div>
 
         <div>
-          <label className="label" htmlFor="pf-desc">Description (optional)</label>
+          <label className="label" htmlFor="pf-desc"> {t("description")} (optional)</label>
           <input id="pf-desc" className="input" value={form.description} onChange={set("description")} maxLength={255} />
         </div>
 
         <div>
-          <span className="label">Photo (optional)</span>
+          <span className="label"> {t("photo")} (optional)</span>
           <div className="flex items-center gap-4">
             <div
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -217,7 +219,7 @@ export default function ProductFormModal({ open, product, categories, onClose, o
         <div className="space-y-3 rounded-xl bg-stone-50 p-4">
           <label className="flex cursor-pointer items-center gap-3 text-sm font-medium">
             <input type="checkbox" className="size-4 accent-brand-600" checked={form.track_stock} onChange={set("track_stock")} />
-            Track stock for this item
+            {t("track_stock")}
             <span className="text-xs font-normal text-stone-500">(for pastries, bottles…)</span>
           </label>
           {form.track_stock && (
@@ -228,7 +230,7 @@ export default function ProductFormModal({ open, product, categories, onClose, o
           )}
           <label className="flex cursor-pointer items-center gap-3 text-sm font-medium">
             <input type="checkbox" className="size-4 accent-brand-600" checked={form.is_active} onChange={set("is_active")} />
-            Available for sale
+            {t("available_for_sale")}
           </label>
         </div>
       </form>

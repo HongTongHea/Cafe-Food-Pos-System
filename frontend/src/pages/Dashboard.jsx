@@ -9,12 +9,10 @@ import PageHeader from "../components/ui/PageHeader";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
 import Badge from "../components/ui/Badge";
+import { useLanguage } from "../context/LanguageContext";
 
-const RANGES = [
-  { key: "7d", label: "7D" },
-  { key: "30d", label: "30D" },
-  { key: "90d", label: "90D" },
-];
+
+
 
 function Delta({ change }) {
   if (change === null || change === undefined) return <span className="text-xs text-stone-400">no prior data</span>;
@@ -61,6 +59,12 @@ function ChartTooltip({ active, payload, money }) {
 }
 
 export default function Dashboard() {
+  const { t } = useLanguage();
+  const RANGES = [
+    { key: "7d", label: t("7d") },
+    { key: "30d", label: t("30d") },
+    { key: "90d", label: t("90d") },
+  ];
   const { money } = useSettings();
   const [range, setRange] = useState("30d");
   const [data, setData] = useState(null);
@@ -92,10 +96,10 @@ export default function Dashboard() {
   return (
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Dashboard"
+        title={t("dashboard")}
         subtitle={
           data
-            ? `Today: ${money(data.today.revenue)} from ${data.today.orders} ${data.today.orders === 1 ? "order" : "orders"}`
+            ? `${t("today")}: ${money(data.today.revenue)} from ${data.today.orders} ${data.today.orders === 1 ? t("order") : t("orders")}`
             : "Sales overview"
         }
         actions={
@@ -123,16 +127,18 @@ export default function Dashboard() {
       ) : (
         <div className={loading ? "opacity-60 transition" : "transition"}>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Kpi icon={Wallet} label="Revenue" value={money(data.kpis.revenue.value)} change={data.kpis.revenue.change} />
-            <Kpi icon={ReceiptText} label="Orders" value={data.kpis.orders.value} change={data.kpis.orders.change} />
-            <Kpi icon={TrendingUp} label="Avg. order" value={money(data.kpis.avg_order.value)} change={data.kpis.avg_order.change} />
-            <Kpi icon={Coffee} label="Items sold" value={data.kpis.items_sold.value} change={data.kpis.items_sold.change} />
+            <Kpi icon={Wallet} label={t("revenue")} value={money(data.kpis.revenue.value)} change={data.kpis.revenue.change} />
+            <Kpi icon={ReceiptText} label={t("orders")} value={data.kpis.orders.value} change={data.kpis.orders.change} />
+            <Kpi icon={TrendingUp} label={t("avgOrder")} value={money(data.kpis.avg_order.value)} change={data.kpis.avg_order.change} />
+            <Kpi icon={Coffee} label={t("itemsSold")} value={data.kpis.items_sold.value} change={data.kpis.items_sold.change} />
           </div>
           {/* Analytics Revenue */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="card p-5 lg:col-span-2">
-              <h3 className="text-base font-bold text-stone-900">Revenue</h3>
-              <p className="mb-4 text-sm text-stone-500">Paid orders per day, last {data.range.days} days</p>
+              <h3 className="text-base font-bold text-stone-900">{t("revenue")}</h3>
+              <p className="mb-4 text-sm text-stone-500">
+                {t("paidOrders")} {t("perDay")}, {t("last")} {data.range.days} {t("days")}
+              </p>
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={data.series} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
@@ -160,8 +166,8 @@ export default function Dashboard() {
             </div>
             {/* best sellers */}
             <div className="card p-5">
-              <h3 className="text-base font-bold text-stone-900">Best sellers</h3>
-              <p className="mb-4 text-sm text-stone-500">By revenue</p>
+              <h3 className="text-base font-bold text-stone-900">{t("bestSellers")}</h3>
+              <p className="mb-4 text-sm text-stone-500">{t("byRevenue")}</p>
               {data.top_products.length === 0 ? (
                 <p className="py-10 text-center text-sm text-stone-400">No sales in this period</p>
               ) : (
@@ -188,8 +194,8 @@ export default function Dashboard() {
           {/* Payment methods */}
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="card p-5">
-              <h3 className="text-base font-bold text-stone-900">Payment methods</h3>
-              <p className="mb-4 text-sm text-stone-500">Share of revenue</p>
+              <h3 className="text-base font-bold text-stone-900">{t("paymentMethods")}</h3>
+              <p className="mb-4 text-sm text-stone-500">{t("shareOfRevenue")}</p>
               {data.payments.length === 0 ? (
                 <p className="py-6 text-center text-sm text-stone-400">No sales in this period</p>
               ) : (
@@ -233,8 +239,8 @@ export default function Dashboard() {
             <div className="card overflow-hidden lg:col-span-2">
               <div className="flex items-center justify-between p-5 pb-3">
                 <div>
-                  <h3 className="text-base font-bold text-stone-900">Recent orders</h3>
-                  <p className="text-sm text-stone-500">Latest activity</p>
+                  <h3 className="text-base font-bold text-stone-900">{t("recentOrders")}</h3>
+                  <p className="text-sm text-stone-500"> {t("latestActivity")}</p>
                 </div>
                 <Link to="/orders" className="text-sm font-semibold text-brand-700 hover:underline">
                   View all

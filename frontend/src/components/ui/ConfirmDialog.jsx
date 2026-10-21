@@ -7,6 +7,7 @@ export default function ConfirmDialog({
   title = "Are you sure?",
   message,
   confirmText = "Confirm",
+  cancelText = "Cancel",
   danger = false,
   loading = false,
   disabled = false,
@@ -23,7 +24,7 @@ export default function ConfirmDialog({
       footer={
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
-            Cancel
+            {cancelText}
           </button>
           <button
             type="button"

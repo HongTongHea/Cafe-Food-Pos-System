@@ -12,15 +12,19 @@ import Badge from "../components/ui/Badge";
 import Pager, { usePaged } from "../components/ui/Pager";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import ReceiptModal from "../components/pos/Receipt";
+import { useLanguage } from "../context/LanguageContext";
 
-const RANGES = [
-  { key: "today", label: "Today" },
-  { key: "7d", label: "7 days" },
-  { key: "30d", label: "30 days" },
-  { key: "all", label: "All time" },
-];
+
 
 export default function Orders() {
+  const { t } = useLanguage();
+  const RANGES = [
+    { key: "today", label: t("today") },
+    { key: "7d", label: t("7d") },
+    { key: "30d", label: t("30d") },
+    { key: "90d", label: t("90d") },
+    { key: "all", label: t("all") },
+  ];
   const { isAdmin } = useAuth();
   const { money, today } = useSettings();
   const toast = useToast();
@@ -107,16 +111,16 @@ export default function Orders() {
   return (
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
-        title="Orders"
-        subtitle={isAdmin ? "Every sale across the shop" : "Your sales"}
+        title={t("orders")}
+        subtitle={isAdmin ? t("everySaleAcrossTheShop") : t("yourSales")}
       />
 
       {/* summary */}
       <div className="mb-5 grid grid-cols-3 gap-3">
         {[
-          { label: "Paid orders", value: summary.count },
-          { label: "Revenue", value: money(summary.revenue) },
-          { label: "Voided", value: summary.voided },
+          { label: t("paidOrders"), value: summary.count },
+          { label: t("revenue"), value: money(summary.revenue) },
+          { label: t("voided"), value: summary.voided },
         ].map((s) => (
           <div key={s.label} className="card px-4 py-3 sm:px-5 sm:py-4">
             <div className="text-xs font-semibold tracking-wide text-stone-500 uppercase">{s.label}</div>
@@ -168,14 +172,14 @@ export default function Orders() {
           </div>
 
           <select className="input w-auto py-2" value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status">
-            <option value="">All statuses</option>
-            <option value="paid">Paid</option>
-            <option value="void">Voided</option>
+            <option value="">{t("allStatuses")}</option>
+            <option value="paid">{t("paidOrders")}</option>
+            <option value="void">{t("voided")}</option>
           </select>
 
           <div className="relative ml-auto w-full sm:w-64">
             <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400" />
-            <input className="input py-2 pl-10" placeholder="Order #, cashier, table…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <input className="input py-2 pl-10" placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
         </div>
 
@@ -191,14 +195,14 @@ export default function Orders() {
               <table className="table-base min-w-190">
                 <thead>
                   <tr>
-                    <th>Order</th>
-                    <th>Time</th>
-                    <th>Cashier</th>
-                    <th>Type</th>
-                    <th className="text-right">Items</th>
-                    <th>Payment</th>
-                    <th className="text-right">Total</th>
-                    <th>Status</th>
+                    <th>{t("orders")}</th>
+                    <th>{t("date")}</th>
+                    <th>{t("cahiers")}</th>
+                    <th>{t("type")}</th>
+                    <th className="text-right">{t("items")}</th>
+                    <th>{t("payment")}</th>
+                    <th className="text-right">{t("total")}</th>
+                    <th>{t("status")}</th>
                   </tr>
                 </thead>
                 <tbody>
