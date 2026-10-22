@@ -88,8 +88,8 @@ export default function Cart({
         {empty ? (
           <div className="flex h-full flex-col items-center justify-center py-10 text-center text-stone-400">
             <ShoppingBag className="mb-3 size-10" strokeWidth={1.4} />
-            <p className="text-sm font-medium text-stone-500">No items yet</p>
-            <p className="text-xs">Tap a product to add it</p>
+            <p className="text-sm font-medium text-stone-500">{t("no_items")}</p>
+            <p className="text-xs">{t("tap_add_items")}</p>
           </div>
         ) : (
           <ul className="divide-y divide-stone-100">

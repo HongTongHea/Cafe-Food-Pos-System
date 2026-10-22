@@ -34,7 +34,7 @@ function Brand({ name }) {
           {name}
         </div>
         <div className="text-[11px] font-medium tracking-widest text-stone-500 uppercase">
-          {t("pointOfSale")}
+          {t("point_of_sale")}
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@ function SidebarContent({ onNavigate }) {
   // Define NAV inside the component so it can access t().
   const NAV = [
     { to: "/dashboard", label: t("dashboard"), icon: LayoutDashboard, admin: true },
-    { to: "/pos", label: t("pointOfSale"), icon: ShoppingBag },
+    { to: "/pos", label: t("point_of_sale"), icon: ShoppingBag },
     { to: "/orders", label: t("orders"), icon: ReceiptText },
     { to: "/products", label: t("products"), icon: Package, admin: true },
     { to: "/users", label: t("staff"), icon: Users, admin: true },

@@ -197,11 +197,11 @@ export default function Orders() {
                   <tr>
                     <th>{t("orders")}</th>
                     <th>{t("date")}</th>
-                    <th>{t("cahiers")}</th>
+                    <th>{t("cashiers")}</th>
                     <th>{t("type")}</th>
-                    <th className="text-right">{t("items")}</th>
+                    <th>{t("items")}</th>
                     <th>{t("payment")}</th>
-                    <th className="text-right">{t("total")}</th>
+                    <th>{t("total")}</th>
                     <th>{t("status")}</th>
                   </tr>
                 </thead>
@@ -215,9 +215,9 @@ export default function Orders() {
                         {ORDER_TYPE_LABEL[o.order_type]}
                         {o.table_no && <span className="text-stone-400"> · T{o.table_no}</span>}
                       </td>
-                      <td className="text-right tabular-nums">{o.item_count}</td>
+                      <td className=" tabular-nums">{o.item_count}</td>
                       <td>{PAYMENT_LABEL[o.payment_method]}</td>
-                      <td className="text-right font-bold tabular-nums">{money(o.total)}</td>
+                      <td className=" font-bold tabular-nums">{money(o.total)}</td>
                       <td>
                         <Badge tone={o.status === "paid" ? "green" : "red"}>{o.status === "paid" ? "Paid" : "Void"}</Badge>
                       </td>
@@ -237,7 +237,7 @@ export default function Orders() {
         extraActions={
           isAdmin && detail?.status === "paid" ? (
             <button type="button" className="btn btn-secondary text-red-600" onClick={() => setVoidOpen(true)}>
-              <Ban className="size-4" /> Void order
+              <Ban className="size-4" />{t("void_order")}
             </button>
           ) : null
         }
@@ -245,9 +245,10 @@ export default function Orders() {
 
       <ConfirmDialog
         open={voidOpen}
-        title={`Void ${detail?.order_no || "order"}?`}
-        message="The sale will be removed from revenue and stock will be returned. This can't be undone."
-        confirmText="Void order"
+        title={`${t("void")} ${detail?.order_no || t("order")}?`}
+        message={t("void_note")}
+        confirmText={t("voidorder")}
+        cancelText={t("cancel")}
         danger
         loading={voiding}
         disabled={!voidReason.trim()}
@@ -255,7 +256,7 @@ export default function Orders() {
         onClose={() => setVoidOpen(false)}
       >
         <label className="label mt-4" htmlFor="void-reason">
-          Reason
+          {t("reason")}
         </label>
         <input
           id="void-reason"

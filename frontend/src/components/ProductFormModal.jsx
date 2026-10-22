@@ -224,7 +224,7 @@ export default function ProductFormModal({ open, product, categories, onClose, o
           </label>
           {form.track_stock && (
             <div>
-              <label className="label" htmlFor="pf-stock">Quantity in stock</label>
+              <label className="label" htmlFor="pf-stock">{t("quantity_in_stock")}</label>
               <input id="pf-stock" className="input" type="number" min="0" step="1" value={form.stock_quantity} onChange={set("stock_quantity")} />
             </div>
           )}

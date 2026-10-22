@@ -253,11 +253,11 @@ export default function Dashboard() {
                   <table className="table-base min-w-120">
                     <thead>
                       <tr>
-                        <th>Order</th>
-                        <th>Cashier</th>
-                        <th>Time</th>
-                        <th className="text-right">Total</th>
-                        <th>Status</th>
+                        <th>{t("orders")}</th>
+                        <th>{t("cashiers")}</th>
+                        <th>{t("date")}</th>
+                        <th>{t("total")}</th>
+                        <th>{t("status")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -266,7 +266,7 @@ export default function Dashboard() {
                           <td className="font-bold">{o.order_no}</td>
                           <td>{o.cashier_name || "—"}</td>
                           <td className="whitespace-nowrap text-stone-500">{fmtDateTime(o.created_at)}</td>
-                          <td className="text-right font-bold tabular-nums">{money(o.total)}</td>
+                          <td className="font-bold tabular-nums">{money(o.total)}</td>
                           <td>
                             <Badge tone={o.status === "paid" ? "green" : "red"}>{o.status === "paid" ? "Paid" : "Void"}</Badge>
                           </td>

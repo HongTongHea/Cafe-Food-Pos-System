@@ -1,4 +1,5 @@
 
+import { Quote } from "lucide-react";
 import {
     createContext,
     useContext,
@@ -17,7 +18,7 @@ const translations = {
         dashboard: "Dashboard",
         user: "User",
         pos: "Point of Sale",
-        pointOfSale: "Point of Sale",
+        point_of_sale: "Point of Sale",
         orders: "Orders",
         products: "Products",
         categories: "Categories",
@@ -49,8 +50,24 @@ const translations = {
         search: "Search",
         login: "Login",
         signOut: "Sign out",
-        openMenu: "Open menu",
-        closeMenu: "Close menu",
+        open_menu: "Open menu",
+        close_Menu: "Close menu",
+        close: "close",
+        print: "Print",
+
+        //Login Page
+        welcome_back: "Welcome back",
+        sign_in: "Sign In",
+        sign_note: "Sign in to start taking orders.",
+        slogan_shop1: "Run your café,",
+        slogan_shop2: "one order at a time.",
+        title1: "Fast checkout",
+        text1: "Tap, charge, print. Built for saller",
+        title2: "Live stock",
+        text2: "Counts drop automatically with every sale.",
+        title3: "Daily Data insights",
+        text3: "Revenue, best sellers and low-stock alerts.",
+
 
         // Language
         language: "Language",
@@ -118,17 +135,24 @@ const translations = {
         complatepayment: "Complete payment",
         back: "Back",
         paymentnote: 'Let the customer scan your QR code, confirm it arrived, then tap Complete payment.',
+        no_items: "No items yet",
+        tap_add_items: "Tap a product to add it",
 
         //Receipt Payment
         receipt: "Receipt",
-
-
+        thank_you_visit: "Thank You Visit",
+        see_you_gain: "See You Again",
+        reason: "Reason",
+        void_order: "Void Order",
+        void: "Void",
+        void_note: "The sale will be removed from revenue and stock will be returned. This can't be undone.",
 
         // Product management
         newProduct: "New product",
         newProductName: "Enter new product name",
         editProduct: "Edit product",
         deleteProduct: "Delete product",
+        searchProduct: "Search Product",
         notedeleteProduct: 'This product will be removed from the menu. Past orders will keep their history. To hide it instead, switch off "Available".',
         addCategory: "Add category",
         editCategory: "Edit category",
@@ -140,6 +164,7 @@ const translations = {
         itemsOnMenu: "items on the menu",
         track_stock: "Track stock for this item",
         available_for_sale: "Available for sale",
+        quantity_in_stock: "Quantity in stock",
 
         // Staff management
         addStaff: "Add staff",
@@ -183,7 +208,7 @@ const translations = {
         dashboard: "ផ្ទាំងគ្រប់គ្រង",
         user: "អ្នកប្រើប្រាស់",
         pos: "ប្រព័ន្ធលក់",
-        pointOfSale: "ប្រព័ន្ធលក់",
+        point_of_sale: "ប្រព័ន្ធលក់",
         orders: "ការបញ្ជាទិញ",
         products: "ផលិតផល",
         categories: "ប្រភេទ",
@@ -207,7 +232,7 @@ const translations = {
         // Common actions
         add: "បន្ថែម",
         save: "រក្សាទុក",
-        saveChanges: "រក្សាទុកការផ្លាស់ប្តូរ",
+        save_changes: "រក្សាទុកការផ្លាស់ប្តូរ",
         cancel: "បោះបង់",
         delete: "លុប",
         rename: "ប្តូរឈ្មោះ",
@@ -215,10 +240,27 @@ const translations = {
         search: "ស្វែងរក",
         login: "ចូលប្រើ",
         signOut: "ចាកចេញ",
-        openMenu: "បើកម៉ឺនុយ",
-        closeMenu: "បិទម៉ឺនុយ",
+        open_menu: "បើកម៉ឺនុយ",
+        close_menu: "បិទម៉ឺនុយ",
         deleteall: "លុបទាំងអស់",
         back: "ថយក្រោយ",
+        close: "បិទ",
+        print: "ព្រិន",
+        voidorder: "លុបការបញ្ជាទិញ",
+
+        //Login Page
+        welcome_back: "សូមស្វាគមន៍ត្រឡប់មកវិញ",
+        placeholder_login: "",
+        sign_in: "ចូលគណនី",
+        sign_note: "ចូលទៅកាន់គណនីដើម្បីចាប់ផ្តើមទទួលការបញ្ជាទិញ។",
+        slogan_shop1: "ដំណើរការហាងកាហ្វេរបស់អ្នក,",
+        slogan_shop2: "ដោយផ្តោតលើការបញ្ជាទិញម្តងមួយៗ។",
+        title1: "ការទូទាត់ប្រាក់រហ័ស",
+        text1: "ចុច, គិតតំម្លៃ, បោះពុម្ព។ បង្កើតឡើងសម្រាប់ការលក់៕",
+        title2: "ស្តុកជាក់ស្តែង",
+        text2: "ចំនួននឹងធ្លាក់ចុះដោយស្វ័យប្រវត្តិជាមួយនឹងការលក់នីមួយៗ។",
+        title3: "ដឹងទិន្នន័យជាប្រចាំថ្ងៃ",
+        text3: "ប្រាក់ចំណូល ការលក់ដាច់បំផុត និងការជូនដំណឹងអំពីស្តុក។",
 
         // Language
         language: "ភាសា",
@@ -232,18 +274,19 @@ const translations = {
         totalOrders: "ការបញ្ជាទិញសរុប",
         revenue: "ប្រាក់ចំណូល",
         paidOrders: "ការបញ្ជាទិញដែលបានទូទាត់ប្រាក់",
-        voided: "បានលុបចោល",
+        voided: "បានលុបការបញ្ជាទិញ",
         avgOrder: "ការបញ្ជាទិញជាមធ្យម",
         itemsSold: "ទំនិញដែលបានលក់",
         paymentMethods: "វិធីសាស្ត្រទូទាត់ប្រាក់",
         revenuePerDay: "ប្រាក់ចំណូលក្នុងមួយថ្ងៃ ក្នុងរយៈពេល {days} ថ្ងៃចុងក្រោយ",
         shareOfRevenue: "ចំណែកនៃប្រាក់ចំណូល",
-        bestSellers: "ផលិតផលលក់ដាច់បំផុត",
+        bestSellers: "ទំនិញលក់ដាច់បំផុត",
         byRevenue: "តាមប្រាក់ចំណូល",
         recentOrders: "ការបញ្ជាទិញថ្មីៗ",
         latestActivity: "សកម្មភាពថ្មីៗ",
         everySaleAcrossTheShop: "ការលក់ទាំងអស់ក្នុងហាង",
         yourSales: "ការលក់របស់អ្នក",
+
 
         // Date ranges
         days: "ថ្ងៃ",
@@ -287,15 +330,25 @@ const translations = {
         cashReceived: "ទទួលសាច់ប្រាក់",
         complatepayment: "ទូទាត់សាច់ប្រាក់",
         paymentnote: 'អនុញ្ញាតឱ្យអតិថិជនស្កេនកូដ QR របស់អ្នក បញ្ជាក់ថាបានទទួលហើយ រួចចុច «បញ្ចប់ការទូទាត់»។',
+        no_items: "គ្មានទំនិញទេ",
+        tap_add_items: "ចុចលើទំនិញដើម្បីបន្ថែម",
 
         //Receipt Payment
         receipt: "វិក្កយបត្រ",
+        thank_you_visit: "សូមអគុណសម្រាប់ការបញ្ជាទិញ",
+        see_you_again: "ជួបគ្នាម្ដងទៀត",
+        reason: "ហេតុផល",
+        void_order: "លុបការបញ្ជាទិញ",
+        void: "លុបចោលការបញ្ជាទិញ",
+        void_note: "ការលក់នេះនឹងត្រូវបានដកចេញពីចំណូល ហើយទំនិញនឹងត្រូវបញ្ចូលត្រឡប់ចូលស្តុកវិញ។ សកម្មភាពនេះមិនអាចលុបចោល ឬកែប្រែឡើងវិញបានទេ។",
+
 
         // Product management
         newProduct: "ផលិតផលថ្មី",
         newProductName: "បញ្ចូលឈ្មោះផលិតផលថ្មី",
         editProduct: "កែប្រែផលិតផល",
         deleteProduct: "លុបផលិតផល",
+        searchProduct: "ស្វែងរកទំនិញ",
         notedeleteProduct: 'ផលិតផលនេះនឹងត្រូវបានលុបចេញពីម៉ឺនុយ។ ការបញ្ជាទិញចាស់ៗនឹងរក្សាប្រវត្តិដដែល។ ប្រសិនបើអ្នកគ្រាន់តែចង់លាក់វា សូមបិទជម្រើស "មានលក់"។',
         addCategory: "បន្ថែមប្រភេទ",
         editCategory: "កែប្រែប្រភេទ",
@@ -307,6 +360,7 @@ const translations = {
         itemsOnMenu: "មុខទំនិញក្នុងម៉ឺនុយ",
         track_stock: "តាមដានស្តុកសម្រាប់ទំនិញនេះ",
         available_for_sale: "មានលក់",
+        quantity_in_stock: "ចំនួននៅក្នុងស្តុក",
 
         // Staff management
         addStaff: "បន្ថែមបុគ្គលិក",
@@ -314,8 +368,8 @@ const translations = {
         editStaff: "កែប្រែបុគ្គលិក",
         deleteStaff: "លុបបុគ្គលិក",
         allStatuses: "ស្ថានភាពទាំងអស់",
-        cahiers: "អ្នកលក់",
-        whoCanSignInToThePOS: "អ្នកដែលអាចចូលប្រើប្រព័ន្ធ POS",
+        cashiers: "អ្នកលក់",
+        whoCanSignInToThePOS: "អ្នកដែលអាចចូលប្រើប្រព័ន្ធគ្រប់គ្រង",
         createAccount: "បង្កើតគណនី",
         updateAccount: "កែប្រែគណនី",
         deleteAccount: "លុបគណនី",

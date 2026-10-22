@@ -4,14 +4,16 @@ import { BarChart3, Coffee, Eye, EyeOff, Loader2, Package, Zap } from "lucide-re
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 import { errorMessage } from "../api/client";
+import { useLanguage } from "../context/LanguageContext";
 
-const FEATURES = [
-  { icon: Zap, title: "Fast checkout", text: "Tap, charge, print. Built for the morning rush." },
-  { icon: Package, title: "Live stock", text: "Counts drop automatically with every sale." },
-  { icon: BarChart3, title: "Daily insights", text: "Revenue, best sellers and low-stock alerts." },
-];
 
 export default function Login() {
+  const { t } = useLanguage();
+  const FEATURES = [
+    { icon: Zap, title: t("title1"), text: t("text1") },
+    { icon: Package, title: t("title2"), text: t("text2") },
+    { icon: BarChart3, title: t("title3"), text: t("text3") },
+  ];
   const { user, login } = useAuth();
   const { shopName } = useSettings();
 
@@ -36,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1.4fr]">
+    <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1.2fr]">
       {/* brand panel */}
       <div className="relative hidden overflow-hidden bg-espresso p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-brand-600/30 blur-3xl" />
@@ -51,9 +53,9 @@ export default function Login() {
 
         <div className="relative max-w-lg">
           <h1 className="font-display text-5xl leading-[1.1] font-extrabold tracking-tight">
-            Run your café,
+            {t("slogan_shop1")}
             <br />
-            <span className="text-brand-400">one order at a time.</span>
+            <span className="text-brand-400"> {t("slogan_shop2")}</span>
           </h1>
           <ul className="mt-10 space-y-6">
             {FEATURES.map(({ icon: Icon, title, text }) => (
@@ -83,8 +85,8 @@ export default function Login() {
             <span className="font-display text-xl font-extrabold">Caffee & Food</span>
           </div>
 
-          <h2 className="text-3xl font-extrabold tracking-tight text-stone-900">Welcome back</h2>
-          <p className="mt-2 text-sm text-stone-500">Sign in to start taking orders.</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-stone-900">{t("welcome_back")}</h2>
+          <p className="mt-2 text-sm text-stone-500">{t("sign_note")}</p>
 
           <form onSubmit={submit} className="mt-8 space-y-5" noValidate>
             {error && (
@@ -95,7 +97,7 @@ export default function Login() {
 
             <div>
               <label className="label" htmlFor="email">
-                Email
+                {t("email")}
               </label>
               <input
                 id="email"
@@ -112,7 +114,7 @@ export default function Login() {
 
             <div>
               <label className="label" htmlFor="password">
-                Password
+                {t("password")}
               </label>
               <div className="relative">
                 <input
@@ -138,7 +140,7 @@ export default function Login() {
 
             <button type="submit" className="btn btn-primary w-full py-3" disabled={loading || !email || !password}>
               {loading && <Loader2 className="size-4 animate-spin" />}
-              Sign in
+              {t("sign_in")}
             </button>
           </form>
           {/* 
@@ -155,9 +157,9 @@ export default function Login() {
               {shopName} &copy; 2026. All rights reserved.
             </p>
             <p className="mt-1">
-              Made with <span className="text-red-500"></span> by{" "}
+              Development  <span className="text-red-500"></span> by{" "}
               <a className="text-blue-500 cursor-pointer hover:underline">
-                Tong Hea v 1.0.0
+                Mr. Tong Hea v 1.1.0
               </a>
               .
             </p>
