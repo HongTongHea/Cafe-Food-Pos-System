@@ -18,7 +18,10 @@ exports.findById = async (id) => {
 };
 
 exports.findByName = async (name) => {
-  const [rows] = await db.query("SELECT id FROM products WHERE product_name = ?", [name]);
+  const [rows] = await db.query(
+    "SELECT id FROM products WHERE product_name = ?",
+    [name],
+  );
   return rows[0];
 };
 
@@ -27,7 +30,16 @@ exports.create = async (p) => {
     `INSERT INTO products
        (category_id, product_name, description, price, track_stock, stock_quantity, image_url, is_active)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [p.category_id, p.product_name, p.description, p.price, p.track_stock, p.stock_quantity, p.image_url, p.is_active]
+    [
+      p.category_id,
+      p.product_name,
+      p.description,
+      p.price,
+      p.track_stock,
+      p.stock_quantity,
+      p.image_url,
+      p.is_active,
+    ],
   );
   return result.insertId;
 };
@@ -38,7 +50,17 @@ exports.update = async (id, p) => {
         SET category_id = ?, product_name = ?, description = ?, price = ?,
             track_stock = ?, stock_quantity = ?, image_url = ?, is_active = ?
       WHERE id = ?`,
-    [p.category_id, p.product_name, p.description, p.price, p.track_stock, p.stock_quantity, p.image_url, p.is_active, id]
+    [
+      p.category_id,
+      p.product_name,
+      p.description,
+      p.price,
+      p.track_stock,
+      p.stock_quantity,
+      p.image_url,
+      p.is_active,
+      id,
+    ],
   );
 };
 

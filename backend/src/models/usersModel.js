@@ -3,12 +3,17 @@ const db = require("../config/db");
 const PUBLIC_COLUMNS = "id, name, email, role, status, created_at";
 
 exports.list = async () => {
-  const [rows] = await db.query(`SELECT ${PUBLIC_COLUMNS} FROM users ORDER BY id DESC`);
+  const [rows] = await db.query(
+    `SELECT ${PUBLIC_COLUMNS} FROM users ORDER BY id DESC`,
+  );
   return rows;
 };
 
 exports.findById = async (id) => {
-  const [rows] = await db.query(`SELECT ${PUBLIC_COLUMNS} FROM users WHERE id = ?`, [id]);
+  const [rows] = await db.query(
+    `SELECT ${PUBLIC_COLUMNS} FROM users WHERE id = ?`,
+    [id],
+  );
   return rows[0];
 };
 
@@ -19,14 +24,17 @@ exports.findByEmailWithPassword = async (email) => {
 };
 
 exports.findByEmail = async (email) => {
-  const [rows] = await db.query(`SELECT ${PUBLIC_COLUMNS} FROM users WHERE email = ?`, [email]);
+  const [rows] = await db.query(
+    `SELECT ${PUBLIC_COLUMNS} FROM users WHERE email = ?`,
+    [email],
+  );
   return rows[0];
 };
 
 exports.create = async ({ name, email, password, role, status }) => {
   const [result] = await db.query(
     "INSERT INTO users (name, email, password, role, status) VALUES (?, ?, ?, ?, ?)",
-    [name, email, password, role, status]
+    [name, email, password, role, status],
   );
   return result.insertId;
 };
@@ -50,7 +58,7 @@ exports.remove = async (id) => {
 exports.countActiveAdmins = async (excludeId = 0) => {
   const [rows] = await db.query(
     "SELECT COUNT(*) AS n FROM users WHERE role = 'admin' AND status = 'active' AND id <> ?",
-    [excludeId]
+    [excludeId],
   );
   return rows[0].n;
 };

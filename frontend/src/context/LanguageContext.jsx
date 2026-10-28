@@ -45,6 +45,7 @@ const translations = {
         saveChanges: "Save changes",
         cancel: "Cancel",
         delete: "Delete",
+        deleteall: "Delete All",
         rename: "Rename",
         done: "Done",
         search: "Search",
@@ -93,6 +94,8 @@ const translations = {
         latestActivity: "Latest activity",
         everySaleAcrossTheShop: "Every sale across the shop",
         yourSales: "Your sales",
+        no_prior_data: "no prior data",
+        vs_previous: "vs previous",
 
         // Date ranges
         days: "days",
@@ -141,7 +144,7 @@ const translations = {
         //Receipt Payment
         receipt: "Receipt",
         thank_you_visit: "Thank You Visit",
-        see_you_gain: "See You Again",
+        see_you_again: "See You Again",
         reason: "Reason",
         void_order: "Void Order",
         void: "Void",
@@ -189,6 +192,11 @@ const translations = {
 
         // Settings
         manageSettings: "Manage settings system and preferences",
+        logo: "Logo",
+        shop_name: "Shop Name",
+        shop_info: "Shop Information",
+        shop_note: "Change your shop name and logo.",
+        save_settings: "Save Settings",
 
         // Confirmation dialogs
         signOutQuestion: "Are you sure you want to sign out?",
@@ -286,7 +294,8 @@ const translations = {
         latestActivity: "សកម្មភាពថ្មីៗ",
         everySaleAcrossTheShop: "ការលក់ទាំងអស់ក្នុងហាង",
         yourSales: "ការលក់របស់អ្នក",
-
+        no_prior_data: "គ្មានទិន្នន័យពីមុន",
+        vs_previous: "ធៀបនឹងមុន",
 
         // Date ranges
         days: "ថ្ងៃ",
@@ -386,6 +395,11 @@ const translations = {
 
         // Settings
         manageSettings: "គ្រប់គ្រងការកំណត់សរបស់ប្រព័ន្ធគ្រប់គ្រង",
+        logo: "ឡូហ្គោ",
+        shop_name: "ឈ្មោះហាង",
+        shop_info: "ព័ត៌មានអំពីហាង",
+        shop_note: "ផ្លាស់ប្ដូរឈ្មោះហាង និងឡូហ្គោរបស់អ្នក។",
+        save_settings: "រក្សាទុកការកំណត់",
 
         // Confirmation dialogs
         signOutQuestion: "តើអ្នកប្រាកដថាចង់ចាកចេញមែនទេ?",

@@ -1,33 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, ArrowDownRight, ArrowUpRight, Coffee, ReceiptText, TrendingUp, Wallet } from "lucide-react";
 import api, { errorMessage } from "../api/client";
 import { useSettings } from "../context/SettingsContext";
-import { fmtDateTime, fmtShortDay, PAYMENT_LABEL } from "../utils/format";
+import { fmtDateTime, fmtShortDay, makeDual, PAYMENT_LABEL } from "../utils/format";
 import PageHeader from "../components/ui/PageHeader";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
 import Badge from "../components/ui/Badge";
 import { useLanguage } from "../context/LanguageContext";
 
-
-
-
 function Delta({ change }) {
-  if (change === null || change === undefined) return <span className="text-xs text-stone-400">no prior data</span>;
+  const { t } = useLanguage();
+
+  if (change === null || change === undefined)
+    return <span className="text-xs text-stone-400">{t("no_prior_data")}</span>;
+
   const up = change >= 0;
   const Icon = up ? ArrowUpRight : ArrowDownRight;
   return (
     <span className={`inline-flex items-center gap-0.5 text-xs font-bold ${up ? "text-emerald-600" : "text-red-600"}`}>
       <Icon className="size-3.5" />
       {Math.abs(change).toFixed(1)}%
-      <span className="ml-1 font-medium text-stone-400">vs previous</span>
+      <span className="ml-1 font-medium text-stone-400">{t("vs_previous")}</span>
     </span>
   );
 }
 
-function Kpi({ icon: Icon, label, value, change }) {
+// `sub` is an optional second line under the value (the ≈ KHR amount).
+function Kpi({ icon: Icon, label, value, sub, change }) {
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between">
@@ -37,6 +39,7 @@ function Kpi({ icon: Icon, label, value, change }) {
         </span>
       </div>
       <div className="mt-3 font-display text-3xl font-extrabold tracking-tight text-stone-900 tabular-nums">{value}</div>
+      {sub && <div className="text-sm font-semibold text-stone-500 tabular-nums">{sub}</div>}
       <div className="mt-1.5">
         <Delta change={change} />
       </div>
@@ -44,14 +47,15 @@ function Kpi({ icon: Icon, label, value, change }) {
   );
 }
 
-function ChartTooltip({ active, payload, money }) {
+function ChartTooltip({ active, payload, fmt }) {
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
   return (
     <div className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm shadow-lg">
       <div className="font-semibold text-stone-800">{fmtShortDay(p.day)}</div>
-      <div className="text-brand-700 font-bold">{money(p.revenue)}</div>
-      <div className="text-xs text-stone-500">
+      <div className="text-brand-700 font-bold">{fmt.usd(p.revenue)}</div>
+      <div className="text-xs font-semibold text-stone-500">≈ {fmt.khr(p.revenue)}</div>
+      <div className="mt-1 text-xs text-stone-500">
         {p.orders} {p.orders === 1 ? "order" : "orders"}
       </div>
     </div>
@@ -65,7 +69,8 @@ export default function Dashboard() {
     { key: "30d", label: t("30d") },
     { key: "90d", label: t("90d") },
   ];
-  const { money } = useSettings();
+  const { exchangeRate } = useSettings();
+  const fmt = useMemo(() => makeDual(exchangeRate), [exchangeRate]);
   const [range, setRange] = useState("30d");
   const [data, setData] = useState(null);
   const [recent, setRecent] = useState([]);
@@ -99,7 +104,7 @@ export default function Dashboard() {
         title={t("dashboard")}
         subtitle={
           data
-            ? `${t("today")}: ${money(data.today.revenue)} from ${data.today.orders} ${data.today.orders === 1 ? t("order") : t("orders")}`
+            ? `${t("today")}: ${fmt.usd(data.today.revenue)} (≈ ${fmt.khr(data.today.revenue)}) from ${data.today.orders} ${data.today.orders === 1 ? t("order") : t("orders")} · $1 = ${Math.round(fmt.rate).toLocaleString("en-US")} ៛`
             : "Sales overview"
         }
         actions={
@@ -127,9 +132,21 @@ export default function Dashboard() {
       ) : (
         <div className={loading ? "opacity-60 transition" : "transition"}>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Kpi icon={Wallet} label={t("revenue")} value={money(data.kpis.revenue.value)} change={data.kpis.revenue.change} />
+            <Kpi
+              icon={Wallet}
+              label={t("revenue")}
+              value={fmt.usd(data.kpis.revenue.value)}
+              sub={`≈ ${fmt.khr(data.kpis.revenue.value)}`}
+              change={data.kpis.revenue.change}
+            />
             <Kpi icon={ReceiptText} label={t("orders")} value={data.kpis.orders.value} change={data.kpis.orders.change} />
-            <Kpi icon={TrendingUp} label={t("avgOrder")} value={money(data.kpis.avg_order.value)} change={data.kpis.avg_order.change} />
+            <Kpi
+              icon={TrendingUp}
+              label={t("avgOrder")}
+              value={fmt.usd(data.kpis.avg_order.value)}
+              sub={`≈ ${fmt.khr(data.kpis.avg_order.value)}`}
+              change={data.kpis.avg_order.change}
+            />
             <Kpi icon={Coffee} label={t("itemsSold")} value={data.kpis.items_sold.value} change={data.kpis.items_sold.change} />
           </div>
           {/* Analytics Revenue */}
@@ -157,8 +174,14 @@ export default function Dashboard() {
                       tickLine={false}
                       minTickGap={28}
                     />
-                    <YAxis tickFormatter={compact} tick={{ fontSize: 11, fill: "#a8a29e" }} axisLine={false} tickLine={false} width={48} />
-                    <Tooltip content={<ChartTooltip money={money} />} />
+                    <YAxis
+                      tickFormatter={(v) => `$${compact(v)}`}
+                      tick={{ fontSize: 11, fill: "#a8a29e" }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={52}
+                    />
+                    <Tooltip content={<ChartTooltip fmt={fmt} />} />
                     <Area type="monotone" dataKey="revenue" stroke="#c25a16" strokeWidth={2.5} fill="url(#rev)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -174,12 +197,15 @@ export default function Dashboard() {
                 <ul className="space-y-4">
                   {data.top_products.map((p, i) => (
                     <li key={p.name}>
-                      <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <div className="flex items-start justify-between gap-3 text-sm">
                         <span className="min-w-0 truncate font-semibold text-stone-800">
                           <span className="mr-2 text-stone-400">{i + 1}</span>
                           {p.name}
                         </span>
-                        <span className="font-bold tabular-nums">{money(p.revenue)}</span>
+                        <span className="text-right tabular-nums">
+                          <span className="block font-bold">{fmt.usd(p.revenue)}</span>
+                          <span className="block text-xs text-stone-500">≈ {fmt.khr(p.revenue)}</span>
+                        </span>
                       </div>
                       <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-stone-100">
                         <div className="h-full rounded-full bg-brand-500" style={{ width: `${(p.revenue / maxTop) * 100}%` }} />
@@ -202,10 +228,13 @@ export default function Dashboard() {
                 <ul className="space-y-3">
                   {data.payments.map((p) => (
                     <li key={p.method}>
-                      <div className="flex justify-between text-sm">
+                      <div className="flex items-start justify-between text-sm">
                         <span className="font-semibold">{PAYMENT_LABEL[p.method]}</span>
-                        <span className="text-stone-500">
-                          {money(p.revenue)} · {Math.round((p.revenue / payTotal) * 100)}%
+                        <span className="text-right tabular-nums text-stone-500">
+                          <span className="block">
+                            {fmt.usd(p.revenue)} · {Math.round((p.revenue / payTotal) * 100)}%
+                          </span>
+                          <span className="block text-xs">≈ {fmt.khr(p.revenue)}</span>
                         </span>
                       </div>
                       <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-stone-100">
@@ -266,7 +295,10 @@ export default function Dashboard() {
                           <td className="font-bold">{o.order_no}</td>
                           <td>{o.cashier_name || "—"}</td>
                           <td className="whitespace-nowrap text-stone-500">{fmtDateTime(o.created_at)}</td>
-                          <td className="font-bold tabular-nums">{money(o.total)}</td>
+                          <td className="whitespace-nowrap tabular-nums">
+                            <div className="font-bold">{fmt.usd(o.total)}</div>
+                            <div className="text-xs font-medium text-stone-500">≈ {fmt.khr(o.total)}</div>
+                          </td>
                           <td>
                             <Badge tone={o.status === "paid" ? "green" : "red"}>{o.status === "paid" ? "Paid" : "Void"}</Badge>
                           </td>

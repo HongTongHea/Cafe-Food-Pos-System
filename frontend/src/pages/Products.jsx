@@ -13,10 +13,12 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import ProductFormModal from "../components/ProductFormModal";
 import CategoriesModal from "../components/CategoriesModal";
 import { useLanguage } from "../context/LanguageContext";
+import { makeDual } from "../utils/format";
 
 export default function Products() {
   const { t } = useLanguage();
-  const { money } = useSettings();
+  const { exchangeRate } = useSettings();
+  const fmt = useMemo(() => makeDual(exchangeRate), [exchangeRate]);
   const toast = useToast();
 
   const [products, setProducts] = useState([]);
@@ -102,7 +104,7 @@ export default function Products() {
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title={t("products")}
-        subtitle={`${products.length} ${t("itemsOnMenu")}`}
+        subtitle={`${products.length} ${t("itemsOnMenu")} · $1 = ${Math.round(fmt.rate).toLocaleString("en-US")} ៛`}
         actions={
           <>
             <button className="btn btn-secondary" onClick={() => setCatsOpen(true)}>
@@ -172,7 +174,10 @@ export default function Products() {
                         </div>
                       </td>
                       <td>{p.category || <span className="text-stone-400">—</span>}</td>
-                      <td className="font-bold tabular-nums">{money(p.price)}</td>
+                      <td className="tabular-nums">
+                        <div className="font-bold">{fmt.usd(p.price)}</div>
+                        <div className="text-xs font-medium text-stone-500">≈ {fmt.khr(p.price)}</div>
+                      </td>
                       <td>
                         {p.track_stock ? (
                           <Badge tone={p.stock_quantity === 0 ? "red" : p.stock_quantity <= 5 ? "amber" : "green"}>

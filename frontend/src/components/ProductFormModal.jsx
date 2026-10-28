@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2 } from "lucide-react";
 import Modal from "./ui/Modal";
 import ProductArt from "./ui/ProductArt";
 import { useLanguage } from "../context/LanguageContext";
+import { useSettings } from "../context/SettingsContext";
+import { makeDual } from "../utils/format";
 
 const EMPTY = {
   product_name: "",
   category_id: "",
-  price: "",
+  price: "", // USD (this is what gets saved)
+  price_khr: "", // KHR helper field, kept in sync with `price`
   description: "",
   image_url: "",
   track_stock: false,
@@ -42,12 +45,20 @@ function compressImage(file, maxSize = 480, quality = 0.82) {
 
 export default function ProductFormModal({ open, product, categories, onClose, onSave }) {
   const { t } = useLanguage();
+  const { exchangeRate } = useSettings();
+  const fmt = useMemo(() => makeDual(exchangeRate), [exchangeRate]);
+
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
   const fileInput = useRef(null);
   const editing = Boolean(product);
+
+  // USD <-> KHR helpers (strings in, strings out, empty stays empty)
+  const usdToKhr = (usd) => (usd === "" || Number.isNaN(Number(usd)) ? "" : String(fmt.toKhr(usd)));
+  const khrToUsd = (khr) =>
+    khr === "" || Number.isNaN(Number(khr)) ? "" : String(Math.round(fmt.toUsd(khr) * 100) / 100);
 
   useEffect(() => {
     if (!open) return;
@@ -58,6 +69,7 @@ export default function ProductFormModal({ open, product, categories, onClose, o
           product_name: product.product_name,
           category_id: product.category_id ?? "",
           price: String(product.price),
+          price_khr: usdToKhr(String(product.price)),
           description: product.description || "",
           image_url: product.image_url || "",
           track_stock: product.track_stock === 1,
@@ -66,10 +78,23 @@ export default function ProductFormModal({ open, product, categories, onClose, o
         }
         : EMPTY
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, product]);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
   const category = categories.find((c) => String(c.id) === String(form.category_id));
+
+  // Typing in USD updates KHR
+  const onUsdChange = (e) => {
+    const value = e.target.value;
+    setForm((f) => ({ ...f, price: value, price_khr: usdToKhr(value) }));
+  };
+
+  // Typing in KHR updates USD
+  const onKhrChange = (e) => {
+    const value = e.target.value;
+    setForm((f) => ({ ...f, price_khr: value, price: khrToUsd(value) }));
+  };
 
   const handleFile = async (file) => {
     if (!file) return;
@@ -93,10 +118,11 @@ export default function ProductFormModal({ open, product, categories, onClose, o
     setSaving(true);
     setError("");
     try {
+      const { price_khr, ...rest } = form; // price_khr is only a helper, don't send it
       await onSave({
-        ...form,
+        ...rest,
         category_id: form.category_id || null,
-        price: Number(form.price),
+        price: Number(form.price), // always saved in USD
         stock_quantity: Number(form.stock_quantity) || 0,
       });
     } catch (err) {
@@ -131,20 +157,57 @@ export default function ProductFormModal({ open, product, categories, onClose, o
           <input id="pf-name" className="input" placeholder={t("newProductName")} value={form.product_name} onChange={set("product_name")} maxLength={150} autoFocus />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="label" htmlFor="pf-cat"> {t("categories")}</label>
-            <select id="pf-cat" className="input" value={form.category_id} onChange={set("category_id")}>
-              <option value="">Uncategorised</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+        <div>
+          <label className="label" htmlFor="pf-cat"> {t("categories")}</label>
+          <select id="pf-cat" className="input" value={form.category_id} onChange={set("category_id")}>
+            <option value="">Uncategorised</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Price in both currencies: type in either one */}
+        <div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label" htmlFor="pf-price"> {t("price")} (USD)</label>
+              <div className="relative">
+                <span className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm font-bold text-stone-400">$</span>
+                <input
+                  id="pf-price"
+                  className="input pl-8 tabular-nums"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  inputMode="decimal"
+                  value={form.price}
+                  onChange={onUsdChange}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="label" htmlFor="pf-price-khr"> {t("price")} (KHR)</label>
+              <div className="relative">
+                <span className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm font-bold text-stone-400">៛</span>
+                <input
+                  id="pf-price-khr"
+                  className="input pl-8 tabular-nums"
+                  type="number"
+                  min="0"
+                  step="100"
+                  placeholder="0"
+                  inputMode="numeric"
+                  value={form.price_khr}
+                  onChange={onKhrChange}
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="label" htmlFor="pf-price"> {t("price")}</label>
-            <input id="pf-price" className="input" type="number" min="0" step="0.01" placeholder={t("enterPrice")} inputMode="decimal" value={form.price} onChange={set("price")} />
-          </div>
+          <p className="mt-1.5 text-xs text-stone-500 tabular-nums">
+            $1 = {Math.round(fmt.rate).toLocaleString("en-US")} ៛ · type in either box, the other updates automatically.
+          </p>
         </div>
 
         <div>

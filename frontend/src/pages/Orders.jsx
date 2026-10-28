@@ -4,7 +4,7 @@ import api, { errorMessage } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 import { useToast } from "../context/ToastContext";
-import { addDays, fmtDateTime, ORDER_TYPE_LABEL, PAYMENT_LABEL } from "../utils/format";
+import { fmtDateTime, makeDual, ORDER_TYPE_LABEL, PAYMENT_LABEL } from "../utils/format";
 import PageHeader from "../components/ui/PageHeader";
 import Spinner from "../components/ui/Spinner";
 import EmptyState from "../components/ui/EmptyState";
@@ -14,7 +14,22 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import ReceiptModal from "../components/pos/Receipt";
 import { useLanguage } from "../context/LanguageContext";
 
+const pad = (n) => String(n).padStart(2, "0");
 
+// Local today as YYYY-MM-DD (fallback when settings' `today` isn't ready)
+const localToday = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+// Timezone-safe date shifting on YYYY-MM-DD strings
+const shiftDate = (dateStr, days) => {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + days));
+  return `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth() + 1)}-${pad(dt.getUTCDate())}`;
+};
+
+const isYMD = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}/.test(s);
 
 export default function Orders() {
   const { t } = useLanguage();
@@ -26,8 +41,11 @@ export default function Orders() {
     { key: "all", label: t("all") },
   ];
   const { isAdmin } = useAuth();
-  const { money, today } = useSettings();
+  const { exchangeRate, today: settingsToday } = useSettings();
+  const fmt = useMemo(() => makeDual(exchangeRate), [exchangeRate]);
   const toast = useToast();
+
+  const today = isYMD(settingsToday) ? settingsToday.slice(0, 10) : localToday();
 
   const [range, setRange] = useState("today");
   const [custom, setCustom] = useState({ from: "", to: "" });
@@ -45,16 +63,25 @@ export default function Orders() {
   const [voiding, setVoiding] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(search.trim()), 300);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setDebounced(search.trim()), 300);
+    return () => clearTimeout(timer);
   }, [search]);
 
   const { from, to } = useMemo(() => {
-    if (range === "today") return { from: today, to: today };
-    if (range === "7d") return { from: addDays(today, -6), to: today };
-    if (range === "30d") return { from: addDays(today, -29), to: today };
-    if (range === "custom") return custom;
-    return { from: "", to: "" };
+    switch (range) {
+      case "today":
+        return { from: today, to: today };
+      case "7d":
+        return { from: shiftDate(today, -6), to: today };
+      case "30d":
+        return { from: shiftDate(today, -29), to: today };
+      case "90d":
+        return { from: shiftDate(today, -89), to: today };
+      case "custom":
+        return custom;
+      default:
+        return { from: "", to: "" }; // "all"
+    }
   }, [range, today, custom]);
 
   const [reloadKey, setReloadKey] = useState(0);
@@ -63,10 +90,26 @@ export default function Orders() {
     let cancelled = false;
     setLoading(true);
     api
-      .get("/orders", { params: { from: from || undefined, to: to || undefined, status: status || undefined, q: debounced || undefined, limit: 500 } })
-      .then((res) => !cancelled && (setOrders(res.data), setError("")))
-      .catch((err) => !cancelled && setError(errorMessage(err, "Could not load orders.")))
-      .finally(() => !cancelled && setLoading(false));
+      .get("/orders", {
+        params: {
+          from: from || undefined,
+          to: to || undefined,
+          status: status || undefined,
+          q: debounced || undefined,
+          limit: 500,
+        },
+      })
+      .then((res) => {
+        if (cancelled) return;
+        setOrders(res.data);
+        setError("");
+      })
+      .catch((err) => {
+        if (!cancelled) setError(errorMessage(err, "Could not load orders."));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
@@ -112,19 +155,24 @@ export default function Orders() {
     <div className="mx-auto max-w-12xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title={t("orders")}
-        subtitle={isAdmin ? t("everySaleAcrossTheShop") : t("yourSales")}
+        subtitle={`${isAdmin ? t("everySaleAcrossTheShop") : t("yourSales")} · $1 = ${Math.round(fmt.rate).toLocaleString("en-US")} ៛`}
       />
 
       {/* summary */}
       <div className="mb-5 grid grid-cols-3 gap-3">
         {[
           { label: t("paidOrders"), value: summary.count },
-          { label: t("revenue"), value: money(summary.revenue) },
+          {
+            label: t("revenue"),
+            value: fmt.usd(summary.revenue),
+            sub: `≈ ${fmt.khr(summary.revenue)}`,
+          },
           { label: t("voided"), value: summary.voided },
         ].map((s) => (
           <div key={s.label} className="card px-4 py-3 sm:px-5 sm:py-4">
             <div className="text-xs font-semibold tracking-wide text-stone-500 uppercase">{s.label}</div>
             <div className="mt-1 font-display text-xl font-extrabold text-stone-900 tabular-nums sm:text-2xl">{s.value}</div>
+            {s.sub && <div className="text-xs font-semibold text-stone-500 tabular-nums sm:text-sm">{s.sub}</div>}
           </div>
         ))}
       </div>
@@ -136,6 +184,7 @@ export default function Orders() {
             {RANGES.map((r) => (
               <button
                 key={r.key}
+                type="button"
                 onClick={() => setRange(r.key)}
                 className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${range === r.key ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-800"
                   }`}
@@ -215,9 +264,12 @@ export default function Orders() {
                         {ORDER_TYPE_LABEL[o.order_type]}
                         {o.table_no && <span className="text-stone-400"> · T{o.table_no}</span>}
                       </td>
-                      <td className=" tabular-nums">{o.item_count}</td>
+                      <td className="tabular-nums">{o.item_count}</td>
                       <td>{PAYMENT_LABEL[o.payment_method]}</td>
-                      <td className=" font-bold tabular-nums">{money(o.total)}</td>
+                      <td className="whitespace-nowrap tabular-nums">
+                        <div className="font-bold">{fmt.usd(o.total)}</div>
+                        <div className="text-xs font-medium text-stone-500">≈ {fmt.khr(o.total)}</div>
+                      </td>
                       <td>
                         <Badge tone={o.status === "paid" ? "green" : "red"}>{o.status === "paid" ? "Paid" : "Void"}</Badge>
                       </td>
@@ -237,7 +289,8 @@ export default function Orders() {
         extraActions={
           isAdmin && detail?.status === "paid" ? (
             <button type="button" className="btn btn-secondary text-red-600" onClick={() => setVoidOpen(true)}>
-              <Ban className="size-4" />{t("void_order")}
+              <Ban className="size-4" />
+              {t("void_order")}
             </button>
           ) : null
         }
